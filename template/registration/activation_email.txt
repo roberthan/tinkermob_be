@@ -1,0 +1,19 @@
+Hi {{ username }},
+
+Thank you for joining our mission to enable ideas too brilliant for common sense.
+
+Bad Ideas helps YOU achieve your one-of-a-kind ideas by
+- Connecting your brilliant ideas with people who appreciate them.
+- Helping you find the supplies and know-how to turn an idea into a reality.
+
+It's up to you and your fellow beta users to define BadIdeas.me with the ingenuity of your ideas/projects and the excellence of your conduct.
+
+To get started:
+1. Browse( http://badideas.me/find ) and support interesting ideas in action
+2. Share( http://badideas.me/share ) ideas on/off the drawing board
+3. Post( http://badideas.me/help ) a help request to connect with the resources you need.
+
+Thank you!
+
+The BadIdeas Guys
+@theBadIdeasGuys (twitter.com/thebadideasguy)
