@@ -44,6 +44,9 @@ def postTest(request):
     return CrossSiteResponse(HttpResponseBadRequest('Check permission'))
 
 def postImage(request):
+    if request.method == "OPTIONS":
+        response = HttpResponse()
+        return CrossSiteResponse(response)
     if request.method == 'POST':
         if request.GET.__contains__('userid') and request.GET.__contains__('authkey'):
             auth_key = request.GET.get('authkey')
