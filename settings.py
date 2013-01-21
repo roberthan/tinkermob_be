@@ -1,10 +1,13 @@
 # Django settings for sleepyswan project.
 
+import os
+
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Robert', 'robert@tinkermob.com'),
 )
 
 MANAGERS = ADMINS
@@ -165,7 +168,15 @@ API_LIMIT_PER_PAGE = 15
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 AWS_ACCESS_KEY_ID ='AKIAJIZMKRU7BKMT2MRA'
 AWS_SECRET_ACCESS_KEY ='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'
-AWS_STORAGE_BUCKET_NAME='tinkermob-dev'
+
+if "TINKERMOB_BE_PROD" in os.environ:
+    AWS_STORAGE_BUCKET_NAME='tinkermob-media'
+    MEDIA_HOST = 'https://s3.amazonaws.com/tinkermob-media'
+else:
+    AWS_STORAGE_BUCKET_NAME='tinkermob-dev'
+    MEDIA_HOST = 'https://s3.amazonaws.com/tinkermob-dev'
+
+
 STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
 IMAGEKIT_DEFAULT_IMAGE_CACHE_BACKEND = 'imagekit.imagecache.NonValidatingImageCacheBackend'

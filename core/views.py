@@ -34,14 +34,14 @@ def CrossSiteResponse(res):
     res["Access-Control-Max-Age"] = "1000"
     res["Access-Control-Allow-Headers"] = "*"
     return res
-
-#@csrf_exempt
-def postTest(request):
-    html = "<html><body>It is now.</body></html>"
-    res = HttpResponse(html)
-    user = User.objects.get(id=1)
-    auth_key = TempAuth.objects.createTempAuth(user)
-    return CrossSiteResponse(HttpResponseBadRequest('Check permission'))
+#
+##@csrf_exempt
+#def postTest(request):
+#    html = "<html><body>It is now.</body></html>"
+#    res = HttpResponse(html)
+#    user = User.objects.get(id=1)
+#    auth_key = TempAuth.objects.createTempAuth(user)
+#    return CrossSiteResponse(HttpResponseBadRequest('Check permission'))
 
 def postImage(request):
     if request.method == "OPTIONS":

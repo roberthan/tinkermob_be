@@ -22,7 +22,6 @@ from string import letters
 from datetime import datetime
 from time import mktime
 
-MEDIA_HOST = 'https://s3.amazonaws.com/tinkermob-dev'
 
 def is_valid_email(email):
     return True if email_re.match(email) else False
@@ -232,7 +231,13 @@ class UserResource(BackboneCompatibleResource):
                 profile.newsletter_setting = bundle.data['newsletter_setting']
             if bundle.data.has_key('notify_setting'):
                 profile.notify_setting = bundle.data['notify_setting']
-#            if  bundle.data.has_key('modified_on') and user:
+            if bundle.data.has_key('facebook_auth'):
+                if bundle.data['facebook_auth'] == 0:
+                    SocialAuth.actives.filter(user = bundle.obj).filter(provider = 'facebook').all().update(is_active=False)
+            if bundle.data.has_key('twitter_auth'):
+                if bundle.data['twitter_auth'] == 0:
+                    SocialAuth.actives.filter(user = bundle.obj).filter(provider = 'twitter').all().update(is_active=False)
+                #            if  bundle.data.has_key('modified_on') and user:
 #                if bundle.data['modified_on'] > user.get_profile().modified_on:
 #                    bundle.data['user']=bundle.request.user
 #                    return bundle
@@ -335,28 +340,32 @@ class SocialAuthResource(BackboneCompatibleResource):
             if isinstance(bundle.data['modified_on'], (int, long)):
                 #convert javascript timestamp to python datetime
                 bundle.data['modified_on'] = datetime.fromtimestamp(bundle.data['modified_on']/1000.0)
-        if not (bundle.data.has_key('provider') or not bundle.data.has_key('id') or not bundle.data.has_key['emails']):
+        if not bundle.data.has_key('provider') or not bundle.data.has_key('id'):
             raise BadRequest('provider missing')
-        if len(bundle.data['emails']) < 1:
-            raise BadRequest('no emails')
+#        if len(bundle.data['emails']) < 1:
+#            raise BadRequest('no emails')
         bundle.data['provider_id']=bundle.data['id']
         del bundle.data['id']
         bundle.data['display_name']=bundle.data['displayName']
         del bundle.data['displayName']
-        bundle.data['profile_url']=bundle.data['profileUrl']
-        del bundle.data['profileUrl']
-        bundle.data['email']=(bundle.data['emails'][0])['value']
-        del bundle.data['emails']
+        if bundle.data.has_key('profileUrl'):
+            bundle.data['profile_url']=bundle.data['profileUrl']
+            del bundle.data['profileUrl']
+        if bundle.data.has_key('emails'):
+            bundle.data['email']=(bundle.data['emails'][0])['value']
+            del bundle.data['emails']
         try:
-            s = SocialAuth.actives.filter(provider=bundle.data['provider']).get(provider_id=bundle.data['provider_id'])
+            s_all = SocialAuth.actives.filter(provider=bundle.data['provider'])
+            s = s_all.get(provider_id=bundle.data['provider_id'])
         except ObjectDoesNotExist:
             #create new
             s = SocialAuth()
             if not bundle.request.user.is_anonymous():
                 s.user = bundle.request.user
                 bundle.obj = s
+                s_all.filter(user =bundle.request.user).all().update(is_active = False)
                 return bundle
-            else:
+            elif bundle.data.has_key('email'):
                 email = bundle.data['email']
                 password = ''.join([choice(letters) for i in xrange(30)])
                 username = ''
@@ -381,7 +390,7 @@ class SocialAuthResource(BackboneCompatibleResource):
             raise BadRequest('social profile already in use')
 #       disable old social profiles
         if not bundle.request.user.is_anonymous():
-            old_socials = SocialAuth.actives.filter(provider=bundle.data['provider']).filter(user=bundle.request.user).update(is_active=False)
+            old_socials = SocialAuth.actives.filter(provider=bundle.data['provider']).filter(user=bundle.request.user).exclude(provider_id=bundle.data['provider_id']).update(is_active=False)
             bundle.request.user = s.user
         bundle.obj = s
         return bundle
