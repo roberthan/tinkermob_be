@@ -16,6 +16,7 @@ from django.contrib.sessions.models import Session
 from django.core.validators import email_re
 from django.contrib.auth import logout
 from datetime import datetime, timedelta
+import calendar
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import int_to_base36, base36_to_int
@@ -24,6 +25,7 @@ from django.template import loader
 from django.core.mail import send_mail
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
+from django.template.defaultfilters import slugify
 
 def is_valid_email(email):
     return True if email_re.match(email) else False
@@ -112,8 +114,8 @@ def postImage(request):
 
             # figure out the path where files will be uploaded to
         #        temp_path = os.path.join(settings.MEDIA_ROOT, "image_upload")
-
-#        temp_path = "/image_upload/"+str(user_id)+'/'+file.name
+#        timestamp=calendar.timegm(datetime.utcnow().utctimetuple())
+#        temp_path = "/image_upload/"+str(user_id)+'/'+timestamp+'-'+file.name
 #        saved_file=default_storage.save(temp_path, file)
         if request.POST.__contains__('id'):
             image_id=request.POST.get('id')
@@ -125,6 +127,7 @@ def postImage(request):
                 image=Image(pk=image_id, user=user)
         else:
             image = Image(user=user)
+#        image.original_image=saved_file
         image.original_image=file
         image.filename=str(file.name)
         image.save()
@@ -203,9 +206,9 @@ def join(request):
         password = data['password']
         username = ''
         if is_valid_email(email) and User.objects.filter(email=email).count() == 0:
-            username = email.strip().lower().partition('@')[0][:30]
+            username = slugify(email.strip().lower().partition('@')[0][:30])
             if User.objects.filter(username__exact=username).exists() or reservedUsername.objects.filter(username__exact=username).exists():
-                username = ''.join([choice(letters) for i in xrange(30)])
+                username = slugify(''.join([choice(letters) for i in xrange(30)]))
         try:
             user = User.objects.create_user(username, email, password)
             profile = Profile.objects.create(user = user)

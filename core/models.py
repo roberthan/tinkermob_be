@@ -17,6 +17,13 @@ def getUID(user):
 def getRevisionID():
     return int(round(time.time()))
 
+import uuid, os
+def get_file_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4(), ext)
+    print filename
+    return os.path.join('uploaded_img', filename)
+
 #filters out all private and deleted entries
 class ActiveManager(models.Manager):
     def get_query_set(self):
@@ -45,7 +52,8 @@ pre_save.connect(TempAuth_pre_save, sender=TempAuth)
 class Image(models.Model):
     id = models.CharField(max_length=255, primary_key=True)
     user  = models.ForeignKey(User)
-    original_image = models.ImageField(upload_to='uploaded_img', blank=True, null=True)
+    original_image = models.ImageField(upload_to=get_file_path, blank=True, null=True)
+#    original_image = models.ImageField(upload_to='uploaded_img', blank=True, null=True)
     formatted_image = ImageSpecField(image_field='original_image', format='JPEG'
             ,options={'quality': 90})
     tile_image = ImageSpecField([ResizeToFill(290, 228, False)], image_field='original_image',format='JPEG')

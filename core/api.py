@@ -22,7 +22,6 @@ from string import letters
 from datetime import datetime
 from time import mktime
 
-
 def is_valid_email(email):
     return True if email_re.match(email) else False
 
@@ -204,10 +203,10 @@ class UserResource(BackboneCompatibleResource):
                             HttpForbidden("Email in Use")
                         )
             if bundle.data.has_key('username'):
-                u = bundle.data['username']
+                u = slugify(bundle.data['username'])
                 if not u == user.username:
                     if not User.objects.filter(username=e).exists():
-                        user.username = bundle.data['username']
+                        user.username = u
                     else:
                         raise ImmediateHttpResponse(
                             HttpForbidden("Username in Use")
@@ -215,7 +214,8 @@ class UserResource(BackboneCompatibleResource):
             if bundle.data.has_key('display_name'):
                 profile.display_name = bundle.data['display_name']
             if bundle.data.has_key('password'):
-                user.set_password(bundle.data['password'])
+                if bundle.data['password'] != '':
+                    user.set_password(bundle.data['password'])
                 del bundle.data['password']
             if bundle.data.has_key('bio'):
                 profile.bio = bundle.data['bio']
@@ -370,11 +370,11 @@ class SocialAuthResource(BackboneCompatibleResource):
                 password = ''.join([choice(letters) for i in xrange(30)])
                 username = ''
                 if is_valid_email(email) and User.objects.filter(email=email).count() == 0:
-                    username = email.strip().lower().partition('@')[0][:30]
+                    username = slugify(email.strip().lower().partition('@')[0][:30])
                 else:
                     raise BadRequest('email already in use, please log in')
                 if User.objects.filter(username__exact=username).exists() or reservedUsername.objects.filter(username__exact=username).exists():
-                    username = ''.join([choice(letters) for i in xrange(30)])
+                    username = slugify(''.join([choice(letters) for i in xrange(30)]))
                 try:
                     user = User.objects.create_user(username, email, password)
                     profile = Profile.objects.create(user = user)
