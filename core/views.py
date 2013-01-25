@@ -163,7 +163,9 @@ def isUnique(request):
             response_data["username"] = True
     if request.GET.__contains__('email'):
         email = request.GET.get('email').lower().strip()
-        if User.objects.filter(email__exact=email).exists():
+        if not is_valid_email(email):
+            response_data["email"] = False
+        elif User.objects.filter(email__exact=email).exists():
             response_data["email"] = False
         else:
             response_data["email"] = True

@@ -21,7 +21,6 @@ import uuid, os
 def get_file_path(instance, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (uuid.uuid4(), ext)
-    print filename
     return os.path.join('uploaded_img', filename)
 
 #filters out all private and deleted entries
