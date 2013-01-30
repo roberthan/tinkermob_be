@@ -55,7 +55,7 @@ class Image(models.Model):
 #    original_image = models.ImageField(upload_to='uploaded_img', blank=True, null=True)
     formatted_image = ImageSpecField(image_field='original_image', format='JPEG'
             ,options={'quality': 90})
-    tile_image = ImageSpecField([ResizeToFill(290, 228, False)], image_field='original_image',format='JPEG')
+    tile_image = ImageSpecField([ResizeToFill(600, 480, False)], image_field='original_image',format='JPEG')
     icon_image = ImageSpecField([ResizeToFill(64, 64, False)], image_field='original_image',format='JPEG')
         #, options={'quality': 90})
 #    profile_image = ImageSpec([resize.Fit(160, 120, False)], image_field='original_image',

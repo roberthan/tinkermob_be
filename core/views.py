@@ -89,6 +89,7 @@ def postImage(request):
         # check against options for errors
         # file size
         if file.size > options["maxfilesize"]:
+            print 'file too big'
             error = "maxFileSize"
         if file.size < options["minfilesize"]:
             error = "minFileSize"
