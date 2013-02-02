@@ -675,7 +675,6 @@ class SnapshotResource(ModelResource):
                     image.save()
                     bundle.obj.image=image
         elif bundle.request.method == 'PUT' or bundle.request.method == 'PATCH':
-            print 'update'
             if bundle.request.user and bundle.data.has_key('id') and bundle.data.has_key('revision'):
                 bundle.data['user']=bundle.request.user
                 id= str(bundle.data['id'])
@@ -686,7 +685,10 @@ class SnapshotResource(ModelResource):
                 except ObjectDoesNotExist:
                     raise BadRequest('not authorized')
                 if bundle.data.has_key('ordering'):
-                    snapshot.update_order(bundle.data['ordering'])
+                    try:
+                        snapshot.update_order(int(bundle.data['ordering']))
+                    except:
+                        raise BadRequest('ordering is not int')
                     del bundle.data['ordering']
                 if bundle.data.has_key('image'):
                     image_id=bundle.data['image']

@@ -188,6 +188,7 @@ class Idea(models.Model):
         self.is_active = False
         self.ordering=None
         self.save()
+    #TODO make sure it's working
     def update_order(self,new_ordering):
         if self.ordering < 0:
             qs = Idea.actives.filter(user=self.user).order_by('-ordering')
@@ -274,27 +275,26 @@ class Snapshot(models.Model):
         self.save()
     def update_order(self,new_ordering):
         if self.ordering < 0:
-            qs = Snapshot.actives.filter(idea=self.idea).order_by('-ordering')
+            qs = Snapshot.objects.filter(idea=self.idea).order_by('-ordering')
             try:
                 self.ordering = qs[0].ordering + 1
             except IndexError:
                 self.ordering = 0
+            self.save()
+            return self.ordering
         diff = new_ordering-self.ordering
         if diff < 0:
             Snapshot.objects.filter(idea=self.idea).filter(ordering__gt=(new_ordering-1)).filter(ordering__lt=self.ordering).update(ordering=F('ordering') + 1)
-            self.ordering=new_ordering
-            self.save()
         elif diff > 0:
             Snapshot.objects.filter(idea=self.idea).filter(ordering__lt=(new_ordering+1)).filter(ordering__gt=self.ordering).update(ordering=F('ordering') - 1)
-            self.ordering=new_ordering
-            self.save()
+        self.ordering=new_ordering
+        self.save()
+        return new_ordering
 
 def snapshot_pre_save(sender, instance, **kwargs):
-#    print instance.ordering
     if not instance.id:
         instance.id=getUID(instance.user)
     instance.revision = getRevisionID()
-    print 'new revision'
     if instance.ordering < 0:
         qs = Snapshot.actives.filter(idea=instance.idea).order_by('-ordering')
         try:
@@ -365,7 +365,6 @@ class supportIdea(models.Model):
     supporter = models.ForeignKey(User)
     created_on = models.DateTimeField(default=datetime.now)
     is_active=models.BooleanField(default=True)
-
     # The default model manager
     objects = models.Manager()
     # public manager
