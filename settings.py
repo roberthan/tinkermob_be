@@ -172,8 +172,8 @@ AWS_ACCESS_KEY_ID ='AKIAJIZMKRU7BKMT2MRA'
 AWS_SECRET_ACCESS_KEY ='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'
 
 if "TINKERMOB_BE_PROD" in os.environ:
-    AWS_STORAGE_BUCKET_NAME='tinkermob-media'
-    MEDIA_HOST = 'https://s3.amazonaws.com/tinkermob-media'
+    AWS_STORAGE_BUCKET_NAME='tinkermob-uploads'
+    MEDIA_HOST = 'https://s3-us-west-1.amazonaws.com/tinkermob-uploads'
 else:
     AWS_STORAGE_BUCKET_NAME='tinkermob-dev'
     MEDIA_HOST = 'https://s3.amazonaws.com/tinkermob-dev'

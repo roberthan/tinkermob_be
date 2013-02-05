@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import time
 post_save.connect(create_api_key, sender=User)
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill, Adjust
+from imagekit.processors import ResizeToFill, Adjust, SmartResize, ResizeToFit
 from django.template.defaultfilters import slugify
 import hashlib
 
@@ -53,10 +53,9 @@ class Image(models.Model):
     user  = models.ForeignKey(User)
     original_image = models.ImageField(upload_to=get_file_path, blank=True, null=True)
 #    original_image = models.ImageField(upload_to='uploaded_img', blank=True, null=True)
-    formatted_image = ImageSpecField(image_field='original_image', format='JPEG'
-            ,options={'quality': 90})
-    tile_image = ImageSpecField([ResizeToFill(600, 480, False)], image_field='original_image',format='JPEG')
-    icon_image = ImageSpecField([ResizeToFill(64, 64, False)], image_field='original_image',format='JPEG')
+    formatted_image = ImageSpecField([ResizeToFit(1900, 1200, False)], image_field='original_image',format='JPEG')
+    tile_image = ImageSpecField([SmartResize(600, 480)], image_field='original_image',format='JPEG')
+    icon_image = ImageSpecField([SmartResize(64, 64)], image_field='original_image',format='JPEG')
         #, options={'quality': 90})
 #    profile_image = ImageSpec([resize.Fit(160, 120, False)], image_field='original_image',
 #        format='JPEG')#, options={'quality': 90})

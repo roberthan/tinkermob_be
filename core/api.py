@@ -282,7 +282,8 @@ class UserResource(BackboneCompatibleResource):
         bundle.data['revision'] = bundle.obj.profile.revision
         if bundle.obj.profile.profile_image:
             if bundle.obj.profile.profile_image.original_image:
-                bundle.data['profile_image'] = bundle.obj.profile.profile_image.original_image.url
+                bundle.data['original_image'] = bundle.obj.profile.profile_image.original_image.url
+                bundle.data['profile_image'] = bundle.obj.profile.profile_image.formatted_image.url
                 bundle.data['tile_image'] = bundle.obj.profile.profile_image.tile_image.url
                 bundle.data['icon_image'] = bundle.obj.profile.profile_image.icon_image.url
         following = supportUser.actives.filter(supporter=bundle.obj)
@@ -610,6 +611,7 @@ class IdeaResource(ModelResource):
             bundle.data['image'] = bundle.obj.image.id
             if bundle.obj.image.tile_image :
                 bundle.data['original_image'] = bundle.obj.image.original_image.url
+                bundle.data['display_image'] = bundle.obj.image.formatted_image.url
                 bundle.data['tile_image'] = bundle.obj.image.tile_image.url
                 bundle.data['icon_image'] = bundle.obj.image.icon_image.url
         if not bundle.obj.is_active:
@@ -723,6 +725,7 @@ class SnapshotResource(ModelResource):
             bundle.data['image'] = bundle.obj.image.id
             if bundle.obj.image.original_image:
                 bundle.data['original_image'] = bundle.obj.image.original_image.url
+                bundle.data['display_image'] = bundle.obj.image.formatted_image.url
                 bundle.data['tile_image'] = bundle.obj.image.tile_image.url
                 bundle.data['icon_image'] = bundle.obj.image.icon_image.url
         if not bundle.obj.is_active:
