@@ -59,9 +59,6 @@ class AnonymousApiKeyAuthentication(ApiKeyAuthentication):
         if request.user and not request.user.is_anonymous():
             # We found credentials but they were wrong.
             return self._unauthorized()
-        #            raise ImmediateHttpResponse(
-        #                HttpForbidden("Invalid Auth")
-        #            )
         else:
             # They're not auth'd. If it's a GET, let them through.
             # Otherwise, deny.
